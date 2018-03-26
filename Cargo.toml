@@ -1,0 +1,13 @@
+[package]
+name = "sparse-bitfield"
+version = "0.1.0"
+license = "Apache-2.0"
+repository = "https://github.com/datrs/sparse-bitfield"
+documentation = "https://docs.rs/sparse-bitfield"
+description = "Bitfield that allocates a series of small buffers"
+authors = ["datrs <yoshuawuyts@gmail.com>"]
+
+[dependencies]
+
+[dev-dependencies]
+clippy = "0.0.189"
