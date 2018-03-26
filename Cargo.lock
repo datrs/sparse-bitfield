@@ -1,0 +1,11 @@
+[[package]]
+name = "memory-pager"
+version = "0.1.0"
+
+[[package]]
+name = "sparse-bitfield"
+version = "0.1.0"
+dependencies = [
+ "memory-pager 0.1.0",
+]
+
