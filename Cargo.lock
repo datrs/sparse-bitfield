@@ -4,7 +4,7 @@ version = "0.4.4-alpha.0"
 
 [[package]]
 name = "sparse-bitfield"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "memory-pager 0.4.4-alpha.0",
 ]
