@@ -74,9 +74,9 @@ impl Bitfield {
   fn get_byte(&mut self, index: usize) -> u8 {
     let masked_index = index & self.page_mask;
     let page_num = (index - 0) / self.page_size;
-    match self.pages.get(page_num) {
-      &Some(page) => page[masked_index],
-      &None => 0,
+    match self.pages.get_mut(page_num) {
+      Some(page) => page[masked_index],
+      None => 0,
     }
   }
 
@@ -84,22 +84,18 @@ impl Bitfield {
   fn set_byte(&mut self, index: usize, byte: u8) -> bool {
     let masked_index = index & self.page_mask;
     let page_num = (index - masked_index) / self.page_size;
-    let page = self.pages.access(page_num);
+    let page = self.pages.get_mut_or_alloc(page_num);
 
     if index >= self.byte_length {
       self.byte_length = index + 1;
       self.length = self.byte_length * 8;
     }
 
-    if page.buffer[masked_index] == byte {
+    if page[masked_index] == byte {
       return false;
     }
 
-    // let pointer = page.buffer.get_mut(masked_index).unwrap();
-    // *pointer = byte;
-    println!("{:?}", page.buffer);
-    page.buffer[masked_index] = byte;
-
+    page[masked_index] = byte;
     if index >= self.byte_length {
       self.byte_length = index + 1;
       self.length = self.byte_length * 8;

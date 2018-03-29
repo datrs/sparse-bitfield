@@ -8,4 +8,4 @@ description = "Bitfield that allocates a series of small buffers"
 authors = ["datrs <yoshuawuyts@gmail.com>"]
 
 [dependencies]
-memory-pager = "0.3.0"
+memory-pager = "0.4.1"
