@@ -1,14 +1,11 @@
 [[package]]
 name = "memory-pager"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+version = "0.4.4-alpha.0"
 
 [[package]]
 name = "sparse-bitfield"
 version = "0.1.0"
 dependencies = [
- "memory-pager 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "memory-pager 0.4.4-alpha.0",
 ]
 
-[metadata]
-"checksum memory-pager 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "ae1087044cacb1728e1656154642eca10227a7cfe77e7d6df4471fa6bf7b0685"
