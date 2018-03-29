@@ -103,6 +103,16 @@ impl Bitfield {
 
     true
   }
+
+  /// Get the amount of bits stored. Includes sparse spaces.
+  pub fn len(&self) -> usize {
+    self.length
+  }
+
+  /// Check if `length` is zero.
+  pub fn is_empty(&self) -> bool {
+    self.length == 0
+  }
 }
 
 #[inline]

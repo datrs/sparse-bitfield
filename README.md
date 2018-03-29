@@ -12,11 +12,11 @@ Bitfield that allocates a series of small buffers. Adapted from
 ```rust
 extern crate sparse_bitfield;
 
-use sparse_bitfield::{Bitfield};
+use sparse_bitfield::Bitfield;
 
 let bits = Bitfield::new(1024);
-bits.set(0, true); // set first bit
-bits.set(1, true); // set second bit
+bits.set(0, true);                 // set first bit
+bits.set(1, true);                 // set second bit
 bits.set(1_000_000_000_000, true); // set the trillionth bit
 assert!(bits.get(1));
 ```
