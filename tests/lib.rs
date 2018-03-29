@@ -17,9 +17,11 @@ fn basic_set_get() {
 #[test]
 fn can_set_bits() {
   let mut bits = Bitfield::new(1024);
-  bits.set(0, true);
-  bits.set(1, true);
-  // bits.set(1_000_000_000_000, true);
+  bits.set(1_00, true);
+  bits.set(1_000, true);
+  bits.set(1_000_000, true);
+  bits.set(1_000_000_000, true);
+  bits.set(1_000_000_000_000, true);
 }
 
 // #[test]
