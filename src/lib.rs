@@ -1,24 +1,6 @@
-// #![deny(warnings, missing_docs)]
-// #![cfg_attr(test, feature(plugin))]
-// #![cfg_attr(test, plugin(clippy))]
-
-//! Bitfield that allocates a series of small buffers. Adapted from
-//! [mafintosh/sparse-bitfield].
-//!
-//! ## Example
-//! ```rust
-//! extern crate sparse_bitfield;
-//!
-//! use sparse_bitfield::{Bitfield};
-//!
-//! let bits = Bitfield::new(1024);
-//! bits.set(0, true); // set first bit
-//! bits.set(1, true); // set second bit
-//! bits.set(1_000_000_000_000, true); // set the trillionth bit
-//! assert!(bits.get(1));
-//! ```
-//!
-//! [mafintosh/sparse-bitfield]: https://github.com/mafintosh/sparse-bitfield
+#![deny(missing_docs)]
+#![feature(external_doc)]
+#![doc(include = "../README.md")]
 
 extern crate memory_pager;
 use memory_pager::Pager;
@@ -54,7 +36,7 @@ impl Bitfield {
   pub fn new(page_size: usize) -> Self {
     assert!(is_even(page_size));
     let pages = Pager::new(page_size);
-    let byte_length = pages.length * page_size;
+    let byte_length = pages.page_size * page_size;
     Bitfield {
       page_size: page_size,
       pages: pages,
@@ -93,8 +75,8 @@ impl Bitfield {
     let masked_index = index & self.page_mask;
     let page_num = (index - 0) / self.page_size;
     match self.pages.get(page_num) {
-      Some(page) => page.buffer[masked_index],
-      None => 0,
+      &Some(page) => page[masked_index],
+      &None => 0,
     }
   }
 
@@ -113,6 +95,9 @@ impl Bitfield {
       return false;
     }
 
+    // let pointer = page.buffer.get_mut(masked_index).unwrap();
+    // *pointer = byte;
+    println!("{:?}", page.buffer);
     page.buffer[masked_index] = byte;
 
     if index >= self.byte_length {

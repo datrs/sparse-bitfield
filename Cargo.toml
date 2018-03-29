@@ -8,8 +8,4 @@ description = "Bitfield that allocates a series of small buffers"
 authors = ["datrs <yoshuawuyts@gmail.com>"]
 
 [dependencies]
-memory-pager = { path = "/home/anon/Code/datrs/memory-pager" }
-# memory-pager = "0.1.0"
-
-[dev-dependencies]
-# clippy = "0.0.189"
+memory-pager = "0.3.0"
