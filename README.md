@@ -27,7 +27,7 @@ $ cargo add sparse-bitfield
 ```
 
 ## License
-[Apache-2.0](./LICENSE)
+[MIT](./LICENSE-MIT) OR [Apache-2.0](./LICENSE-APACHE)
 
 [1]: https://img.shields.io/crates/v/sparse-bitfield.svg?style=flat-square
 [2]: https://crates.io/crates/sparse-bitfield
