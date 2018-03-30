@@ -21,7 +21,7 @@ fn can_set_bits() {
   bits.set(1_000, true);
   bits.set(1_000_000, true);
   bits.set(1_000_000_000, true);
-  bits.set(1_000_000_000_000, true);
+  // bits.set(1_000_000_000_000, true);
 }
 
 #[test]
