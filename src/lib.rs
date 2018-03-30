@@ -38,10 +38,10 @@ impl Bitfield {
     let pages = Pager::new(page_size);
     let byte_length = pages.page_size * page_size;
     Bitfield {
-      page_size: page_size,
-      pages: pages,
+      page_size,
+      pages,
+      byte_length,
       page_mask: page_size - 1,
-      byte_length: byte_length,
       length: 8 * byte_length,
     }
   }
@@ -52,10 +52,11 @@ impl Bitfield {
     let j = (index - masked_index) / 8;
     let b = self.get_byte(j);
 
-    match value {
-      true => self.set_byte(j, b | (128 >> masked_index)),
-      false => self.set_byte(j, b & (255 ^ (128 >> masked_index))),
-    };
+    if value {
+      self.set_byte(j, b | (128 >> masked_index));
+    } else {
+      self.set_byte(j, b & (255 ^ (128 >> masked_index)));
+    }
   }
 
   /// Get the value of a bit.
@@ -73,7 +74,7 @@ impl Bitfield {
   /// Get a byte from our internal buffers.
   fn get_byte(&mut self, index: usize) -> u8 {
     let masked_index = index & self.page_mask;
-    let page_num = (index - 0) / self.page_size;
+    let page_num = index / self.page_size;
     match self.pages.get_mut(page_num) {
       Some(page) => page[masked_index],
       None => 0,
