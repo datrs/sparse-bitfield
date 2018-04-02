@@ -6,9 +6,10 @@ repository = "https://github.com/datrs/sparse-bitfield"
 documentation = "https://docs.rs/sparse-bitfield"
 description = "Bitfield that allocates a series of small buffers"
 authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
+readme = "README.md"
 
 [dependencies]
 memory-pager = "0.4.3"
 
 [dev-dependencies]
-clippy = "*"
+clippy = "0.0"
