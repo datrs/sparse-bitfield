@@ -1,6 +1,6 @@
 extern crate sparse_bitfield;
 
-use sparse_bitfield::Bitfield;
+use sparse_bitfield::{Bitfield, Change};
 
 #[test]
 fn can_create_bitfield() {
@@ -37,9 +37,9 @@ fn can_get_bits() {
 #[test]
 fn returns_if_flipped() {
   let mut bits = Bitfield::new(1024);
-  assert_eq!(bits.set(0, true), true);
-  assert_eq!(bits.set(0, false), true);
-  assert_eq!(bits.set(0, true), true);
-  assert_eq!(bits.set(0, true), false);
-  assert_eq!(bits.set(0, true), false);
+  assert_eq!(bits.set(0, true), Change::Changed);
+  assert_eq!(bits.set(0, false), Change::Changed);
+  assert_eq!(bits.set(0, true), Change::Changed);
+  assert_eq!(bits.set(0, true), Change::Unchanged);
+  assert_eq!(bits.set(0, true), Change::Unchanged);
 }

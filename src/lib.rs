@@ -5,6 +5,7 @@
 #![cfg_attr(test, plugin(clippy))]
 
 /// Determine wether the `bitfield.set()` method changed the underlying value.
+#[derive(Debug, PartialEq)]
 pub enum Change {
   /// The value was changed.
   Changed,
