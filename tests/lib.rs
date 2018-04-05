@@ -17,7 +17,7 @@ fn basic_set_get() {
 #[test]
 fn can_set_bits() {
   let mut bits = Bitfield::new(1024);
-  bits.set(1_00, true);
+  bits.set(100, true);
   bits.set(1_000, true);
   bits.set(1_000_000, true);
   bits.set(1_000_000_000, true);
@@ -29,7 +29,17 @@ fn can_get_bits() {
   let mut bits = Bitfield::new(1024);
   bits.set(0, true);
   bits.set(1, true);
-  bits.set(1_000, true);
+  bits.set(1000, true);
   assert_eq!(bits.get(0), true);
   assert_eq!(bits.get(1), true);
+}
+
+#[test]
+fn returns_if_flipped() {
+  let mut bits = Bitfield::new(1024);
+  assert_eq!(bits.set(0, true), true);
+  assert_eq!(bits.set(0, false), true);
+  assert_eq!(bits.set(0, true), true);
+  assert_eq!(bits.set(0, true), false);
+  assert_eq!(bits.set(0, true), false);
 }

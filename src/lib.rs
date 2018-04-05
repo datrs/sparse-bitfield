@@ -48,16 +48,17 @@ impl Bitfield {
     }
   }
 
-  /// Set a bit to true or false.
-  pub fn set(&mut self, index: usize, value: bool) {
+  /// Set a byte to true or false. Returns a boolean indicating if the value was
+  /// changed.
+  pub fn set(&mut self, index: usize, value: bool) -> bool {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
     let b = self.get_byte(j);
 
     if value {
-      self.set_byte(j, b | (128 >> masked_index));
+      self.set_byte(j, b | (128 >> masked_index))
     } else {
-      self.set_byte(j, b & (255 ^ (128 >> masked_index)));
+      self.set_byte(j, b & (255 ^ (128 >> masked_index)))
     }
   }
 
