@@ -17,6 +17,7 @@ extern crate memory_pager;
 use memory_pager::Pager;
 
 /// Bitfield instance.
+#[derive(Debug)]
 pub struct Bitfield {
   /// The [`page_size`] of the `Page` instances stored in [memory-pager].
   ///
