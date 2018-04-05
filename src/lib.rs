@@ -4,6 +4,14 @@
 #![cfg_attr(test, feature(plugin))]
 #![cfg_attr(test, plugin(clippy))]
 
+/// Determine wether the `bitfield.set()` method changed the underlying value.
+pub enum Change {
+  /// The value was changed.
+  Changed,
+  /// The value was not changed.
+  Unchanged,
+}
+
 extern crate memory_pager;
 use memory_pager::Pager;
 
@@ -50,7 +58,7 @@ impl Bitfield {
 
   /// Set a byte to true or false. Returns a boolean indicating if the value was
   /// changed.
-  pub fn set(&mut self, index: usize, value: bool) -> bool {
+  pub fn set(&mut self, index: usize, value: bool) -> Change {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
     let b = self.get_byte(j);
@@ -85,7 +93,7 @@ impl Bitfield {
   }
 
   /// Set a byte to the right value inside our internal buffers.
-  fn set_byte(&mut self, index: usize, byte: u8) -> bool {
+  fn set_byte(&mut self, index: usize, byte: u8) -> Change {
     let masked_index = index & self.page_mask;
     let page_num = (index - masked_index) / self.page_size;
     let page = self.pages.get_mut_or_alloc(page_num);
@@ -96,7 +104,7 @@ impl Bitfield {
     }
 
     if page[masked_index] == byte {
-      return false;
+      return Change::Unchanged;
     }
 
     page[masked_index] = byte;
@@ -105,7 +113,7 @@ impl Bitfield {
       self.length = self.byte_length * 8;
     }
 
-    true
+    Change::Changed
   }
 
   /// Get the amount of bits stored. Includes sparse spaces.
