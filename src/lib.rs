@@ -4,10 +4,20 @@
 #![cfg_attr(test, feature(plugin))]
 #![cfg_attr(test, plugin(clippy))]
 
+/// Determine wether the `bitfield.set()` method changed the underlying value.
+#[derive(Debug, PartialEq)]
+pub enum Change {
+  /// The value was changed.
+  Changed,
+  /// The value was not changed.
+  Unchanged,
+}
+
 extern crate memory_pager;
 use memory_pager::Pager;
 
 /// Bitfield instance.
+#[derive(Debug)]
 pub struct Bitfield {
   /// The [`page_size`] of the `Page` instances stored in [memory-pager].
   ///
@@ -48,16 +58,17 @@ impl Bitfield {
     }
   }
 
-  /// Set a bit to true or false.
-  pub fn set(&mut self, index: usize, value: bool) {
+  /// Set a byte to true or false. Returns a boolean indicating if the value was
+  /// changed.
+  pub fn set(&mut self, index: usize, value: bool) -> Change {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
     let b = self.get_byte(j);
 
     if value {
-      self.set_byte(j, b | (128 >> masked_index));
+      self.set_byte(j, b | (128 >> masked_index))
     } else {
-      self.set_byte(j, b & (255 ^ (128 >> masked_index)));
+      self.set_byte(j, b & (255 ^ (128 >> masked_index)))
     }
   }
 
@@ -84,7 +95,7 @@ impl Bitfield {
   }
 
   /// Set a byte to the right value inside our internal buffers.
-  fn set_byte(&mut self, index: usize, byte: u8) -> bool {
+  fn set_byte(&mut self, index: usize, byte: u8) -> Change {
     let masked_index = index & self.page_mask;
     let page_num = (index - masked_index) / self.page_size;
     let page = self.pages.get_mut_or_alloc(page_num);
@@ -95,7 +106,7 @@ impl Bitfield {
     }
 
     if page[masked_index] == byte {
-      return false;
+      return Change::Unchanged;
     }
 
     page[masked_index] = byte;
@@ -104,7 +115,7 @@ impl Bitfield {
       self.length = self.byte_length * 8;
     }
 
-    true
+    Change::Changed
   }
 
   /// Get the amount of bits stored. Includes sparse spaces.
