@@ -85,7 +85,7 @@ impl Bitfield {
   }
 
   /// Get a byte from our internal buffers.
-  fn get_byte(&mut self, index: usize) -> u8 {
+  pub fn get_byte(&mut self, index: usize) -> u8 {
     let masked_index = index & self.page_mask;
     let page_num = index / self.page_size;
     match self.pages.get_mut(page_num) {
@@ -95,7 +95,7 @@ impl Bitfield {
   }
 
   /// Set a byte to the right value inside our internal buffers.
-  fn set_byte(&mut self, index: usize, byte: u8) -> Change {
+  pub fn set_byte(&mut self, index: usize, byte: u8) -> Change {
     let masked_index = index & self.page_mask;
     let page_num = (index - masked_index) / self.page_size;
     let page = self.pages.get_mut_or_alloc(page_num);
