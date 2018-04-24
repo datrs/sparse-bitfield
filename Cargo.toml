@@ -9,7 +9,7 @@ authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
 readme = "README.md"
 
 [dependencies]
-memory-pager = "0.4.3"
+memory-pager = "0.4.6"
 
 [dev-dependencies]
 clippy = "0.0"
