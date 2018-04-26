@@ -13,3 +13,4 @@ memory-pager = "0.4.6"
 
 [dev-dependencies]
 clippy = "0.0"
+proptest = "0.6.0"

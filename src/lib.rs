@@ -47,7 +47,7 @@ impl Default for Bitfield {
 impl Bitfield {
   /// Create a new instance.
   pub fn new(page_size: usize) -> Self {
-    assert!(is_even(page_size));
+    assert!(is_power_of_two(page_size));
     let pages = Pager::new(page_size);
     let byte_length = pages.page_size * page_size;
     Bitfield {
@@ -131,6 +131,6 @@ impl Bitfield {
 }
 
 #[inline]
-fn is_even(x: usize) -> bool {
-  (x & (x - 1)) == 0
+fn is_power_of_two(x: usize) -> bool {
+  x.count_ones() == 1
 }
