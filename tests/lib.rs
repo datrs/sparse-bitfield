@@ -43,3 +43,10 @@ fn returns_if_flipped() {
   assert_eq!(bits.set(0, true), Change::Unchanged);
   assert_eq!(bits.set(0, true), Change::Unchanged);
 }
+
+#[test]
+fn exposes_changed_unchanged_methods() {
+  let mut bits = Bitfield::new(1024);
+  assert!(bits.set(0, true).is_changed());
+  assert!(bits.set(0, true).is_unchanged());
+}
