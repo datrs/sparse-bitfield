@@ -12,6 +12,20 @@ pub enum Change {
   Unchanged,
 }
 
+impl Change {
+  /// Returns `true` if the result is `Changed`.
+  #[inline]
+  pub fn is_changed(&self) -> bool {
+    *self == Change::Changed
+  }
+
+  /// Returns `true` if the result is `Unchanged`.
+  #[inline]
+  pub fn is_unchanged(&self) -> bool {
+    !self.is_changed()
+  }
+}
+
 extern crate memory_pager;
 use memory_pager::Pager;
 
