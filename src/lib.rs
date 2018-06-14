@@ -133,7 +133,7 @@ impl Bitfield {
   /// Get the memory page size in bytes.
   #[inline]
   pub fn page_size(&self) -> usize {
-    self.pages.page_size
+    self.pages.page_size()
   }
 
   /// Get the amount of bits in the bitfield.
