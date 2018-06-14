@@ -1,55 +1,32 @@
-#![deny(missing_docs)]
-#![feature(external_doc)]
-#![doc(include = "../README.md")]
-
-/// Determine wether the `bitfield.set()` method changed the underlying value.
-#[derive(Debug, PartialEq)]
-pub enum Change {
-  /// The value was changed. Equal to `true` in `mafintosh/sparse-bitfield`.
-  Changed,
-  /// The value was not changed. Equal to `false` in
-  /// `mafintosh/sparse-bitfield`.
-  Unchanged,
-}
-
-impl Change {
-  /// Returns `true` if the result is `Changed`.
-  #[inline]
-  pub fn is_changed(&self) -> bool {
-    *self == Change::Changed
-  }
-
-  /// Returns `true` if the result is `Unchanged`.
-  #[inline]
-  pub fn is_unchanged(&self) -> bool {
-    !self.is_changed()
-  }
-}
+#![cfg_attr(feature = "nightly", deny(missing_docs))]
+#![cfg_attr(feature = "nightly", feature(external_doc))]
+#![cfg_attr(feature = "nightly", doc(include = "../README.md"))]
+#![cfg_attr(test, deny(warnings))]
 
 extern crate memory_pager;
+
+mod change;
+mod iter;
+
+pub use change::Change;
+pub use iter::Iter;
 use memory_pager::Pager;
 
 /// Bitfield instance.
 #[derive(Debug)]
 pub struct Bitfield {
-  /// The [`page_size`] of the `Page` instances stored in [memory-pager].
-  ///
-  /// [`page_size`]: https://docs.rs/memory-pager/0.1.0/memory_pager/struct.Pager.html#structfield.page_size
-  /// [memory-pager]: https://docs.rs/memory-pager/
-  pub page_size: usize,
-
   /// A [memory-pager] instance.
   ///
   /// [memory-pager]: https://docs.rs/memory-pager/
   pub pages: Pager,
 
-  page_mask: usize,
-  byte_length: usize,
   length: usize,
+  page_length: usize,
 }
 
 /// Create a new instance with a `page_size` of `1kb`.
 impl Default for Bitfield {
+  #[inline]
   fn default() -> Self {
     let page_size = 1024;
     Bitfield::new(page_size)
@@ -58,21 +35,21 @@ impl Default for Bitfield {
 
 impl Bitfield {
   /// Create a new instance.
+  ///
+  /// ## Panics
+  /// Panics if the page size is not a power of two (2, 4, 8, etc.)
   pub fn new(page_size: usize) -> Self {
     assert!(is_power_of_two(page_size));
-    let pages = Pager::new(page_size);
-    let byte_length = pages.page_size * page_size;
     Bitfield {
-      page_size,
-      pages,
-      byte_length,
-      page_mask: page_size - 1,
-      length: 8 * byte_length,
+      pages: Pager::new(page_size),
+      page_length: 0,
+      length: 0,
     }
   }
 
   /// Set a byte to true or false. Returns a boolean indicating if the value was
   /// changed.
+  #[inline]
   pub fn set(&mut self, index: usize, value: bool) -> Change {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
@@ -86,6 +63,7 @@ impl Bitfield {
   }
 
   /// Get the value of a bit.
+  #[inline]
   pub fn get(&mut self, index: usize) -> bool {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
@@ -98,47 +76,67 @@ impl Bitfield {
   }
 
   /// Get a byte from our internal buffers.
-  pub fn get_byte(&mut self, index: usize) -> u8 {
-    let masked_index = index & self.page_mask;
-    let page_num = index / self.page_size;
-    match self.pages.get_mut(page_num) {
+  #[inline]
+  pub fn get_byte(&self, index: usize) -> u8 {
+    let masked_index = self.page_mask(index);
+    let page_num = index / self.page_size();
+    match self.pages.get(page_num) {
       Some(page) => page[masked_index],
       None => 0,
     }
   }
 
   /// Set a byte to the right value inside our internal buffers.
+  #[inline]
   pub fn set_byte(&mut self, index: usize, byte: u8) -> Change {
-    let masked_index = index & self.page_mask;
-    let page_num = (index - masked_index) / self.page_size;
+    let masked_index = self.page_mask(index);
+    let page_num = (index - masked_index) / self.page_size();
     let page = self.pages.get_mut_or_alloc(page_num);
 
-    if index >= self.byte_length {
-      self.byte_length = index + 1;
-      self.length = self.byte_length * 8;
+    if index >= self.length {
+      self.length = index + 1;
     }
-
     if page[masked_index] == byte {
       return Change::Unchanged;
     }
 
     page[masked_index] = byte;
-    if index >= self.byte_length {
-      self.byte_length = index + 1;
-      self.length = self.byte_length * 8;
+    if index >= self.length {
+      self.length = index + 1;
     }
 
     Change::Changed
   }
 
-  /// Get the amount of bits stored. Includes sparse spaces.
+  /// Get the memory page size in bytes.
+  #[inline]
+  pub fn page_size(&self) -> usize {
+    self.pages.page_size()
+  }
+
+  /// Get the amount of bits in the bitfield.
+  #[inline]
   pub fn len(&self) -> usize {
     self.length
   }
 
-  /// Check if `length` is zero.
+  /// Returns `true` if no bits are stored.
+  #[inline]
   pub fn is_empty(&self) -> bool {
-    self.length == 0
+    self.len() == 0
+  }
+
+  /// Create an `Iterator` that iterates over all pages.
+  pub fn iter(&mut self) -> Iter {
+    Iter {
+      inner: self,
+      cursor: 0,
+    }
+  }
+
+  #[inline]
+  fn page_mask(&self, index: usize) -> usize {
+    index & self.page_size() - 1
   }
 }
 

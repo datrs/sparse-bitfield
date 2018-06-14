@@ -50,3 +50,22 @@ fn exposes_changed_unchanged_methods() {
   assert!(bits.set(0, true).is_changed());
   assert!(bits.set(0, true).is_unchanged());
 }
+
+#[test]
+fn can_iterate() {
+  let mut bits = Bitfield::new(1024);
+
+  bits.set(0, true);
+  for bit in bits.iter() {
+    assert_eq!(bit, true, "one bit, value true");
+  }
+
+  bits.set(1, false);
+  for (i, bit) in bits.iter().enumerate() {
+    match i {
+      0 => assert!(bit, true),
+      1 => assert!(bit, false),
+      i => panic!("index {} out of bounds", i),
+    }
+  }
+}
