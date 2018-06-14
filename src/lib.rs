@@ -2,6 +2,13 @@
 #![feature(external_doc)]
 #![doc(include = "../README.md")]
 
+extern crate memory_pager;
+
+mod iter;
+
+use iter::Iter;
+use memory_pager::Pager;
+
 /// Determine wether the `bitfield.set()` method changed the underlying value.
 #[derive(Debug, PartialEq)]
 pub enum Change {
@@ -26,9 +33,6 @@ impl Change {
   }
 }
 
-extern crate memory_pager;
-use memory_pager::Pager;
-
 /// Bitfield instance.
 #[derive(Debug)]
 pub struct Bitfield {
@@ -50,6 +54,7 @@ pub struct Bitfield {
 
 /// Create a new instance with a `page_size` of `1kb`.
 impl Default for Bitfield {
+  #[inline]
   fn default() -> Self {
     let page_size = 1024;
     Bitfield::new(page_size)
@@ -73,6 +78,7 @@ impl Bitfield {
 
   /// Set a byte to true or false. Returns a boolean indicating if the value was
   /// changed.
+  #[inline]
   pub fn set(&mut self, index: usize, value: bool) -> Change {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
@@ -86,6 +92,7 @@ impl Bitfield {
   }
 
   /// Get the value of a bit.
+  #[inline]
   pub fn get(&mut self, index: usize) -> bool {
     let masked_index = index & 7;
     let j = (index - masked_index) / 8;
@@ -98,16 +105,18 @@ impl Bitfield {
   }
 
   /// Get a byte from our internal buffers.
-  pub fn get_byte(&mut self, index: usize) -> u8 {
+  #[inline]
+  pub fn get_byte(&self, index: usize) -> u8 {
     let masked_index = index & self.page_mask;
     let page_num = index / self.page_size;
-    match self.pages.get_mut(page_num) {
+    match self.pages.get(page_num) {
       Some(page) => page[masked_index],
       None => 0,
     }
   }
 
   /// Set a byte to the right value inside our internal buffers.
+  #[inline]
   pub fn set_byte(&mut self, index: usize, byte: u8) -> Change {
     let masked_index = index & self.page_mask;
     let page_num = (index - masked_index) / self.page_size;
@@ -132,13 +141,23 @@ impl Bitfield {
   }
 
   /// Get the amount of bits stored. Includes sparse spaces.
+  #[inline]
   pub fn len(&self) -> usize {
     self.length
   }
 
   /// Check if `length` is zero.
+  #[inline]
   pub fn is_empty(&self) -> bool {
-    self.length == 0
+    self.len() == 0
+  }
+
+  /// Create an `Iterator` that iterates over all pages.
+  pub fn iter(&mut self) -> Iter {
+    Iter {
+      inner: self,
+      cursor: 0,
+    }
   }
 }
 
