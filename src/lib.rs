@@ -21,7 +21,6 @@ pub struct Bitfield {
   pub pages: Pager,
 
   length: usize,
-  page_length: usize,
 }
 
 /// Create a new instance with a `page_size` of `1kb`.
@@ -42,7 +41,6 @@ impl Bitfield {
     assert!(is_power_of_two(page_size));
     Bitfield {
       pages: Pager::new(page_size),
-      page_length: 0,
       length: 0,
     }
   }
