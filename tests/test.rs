@@ -56,16 +56,34 @@ fn can_iterate() {
   let mut bits = Bitfield::new(1024);
 
   bits.set(0, true);
-  for bit in bits.iter() {
-    assert_eq!(bit, true, "one bit, value true");
+  for (i, bit) in bits.iter().enumerate() {
+    assert_eq!(bit, i == 0, "one bit, value true");
   }
 
   bits.set(1, false);
   for (i, bit) in bits.iter().enumerate() {
     match i {
       0 => assert!(bit),
-      1 => assert!(!bit),
+      1...7 => assert!(!bit, "{:?}", (i, bit)),
       i => panic!("index {} out of bounds", i),
     }
   }
+}
+
+#[test]
+fn len_is_correct() {
+  let mut bits = Bitfield::new(1024);
+  assert_eq!(bits.len(), 0);
+
+  bits.set(0, true);
+  assert_eq!(bits.len(), 8);
+
+  bits.set_byte(10, 0x00);
+  assert_eq!(bits.len(), 88);
+
+  bits.set_byte(20, 0xff);
+  assert_eq!(bits.len(), 168);
+
+  bits.set(1_000_000_000, true);
+  assert_eq!(bits.len(), 1_000_000_008);
 }

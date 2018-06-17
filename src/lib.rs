@@ -112,7 +112,7 @@ impl Bitfield {
   /// Get the amount of bits in the bitfield.
   #[inline]
   pub fn len(&self) -> usize {
-    self.length
+    self.length * 8
   }
 
   /// Returns `true` if no bits are stored.
