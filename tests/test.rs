@@ -11,7 +11,7 @@ fn can_create_bitfield() {
 fn basic_set_get() {
   let mut bits = Bitfield::new(1024);
   bits.set(0, true);
-  assert!(bits.get(0), true);
+  assert!(bits.get(0));
 }
 
 #[test]
@@ -63,8 +63,8 @@ fn can_iterate() {
   bits.set(1, false);
   for (i, bit) in bits.iter().enumerate() {
     match i {
-      0 => assert!(bit, true),
-      1 => assert!(bit, false),
+      0 => assert!(bit),
+      1 => assert!(!bit),
       i => panic!("index {} out of bounds", i),
     }
   }
