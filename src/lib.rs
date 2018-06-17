@@ -99,9 +99,6 @@ impl Bitfield {
     }
 
     page[masked_index] = byte;
-    if index >= self.length {
-      self.length = index + 1;
-    }
 
     Change::Changed
   }
