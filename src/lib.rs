@@ -136,7 +136,7 @@ impl Bitfield {
 
   #[inline]
   fn page_mask(&self, index: usize) -> usize {
-    index & self.page_size() - 1
+    index & (self.page_size() - 1)
   }
 }
 
