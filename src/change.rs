@@ -1,4 +1,4 @@
-/// Determine wether the `bitfield.set()` method changed the underlying value.
+/// Determine whether the `bitfield.set()` method changed the underlying value.
 #[derive(Debug, PartialEq)]
 pub enum Change {
   /// The value was changed. Equal to `true` in `mafintosh/sparse-bitfield`.
