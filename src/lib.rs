@@ -38,7 +38,11 @@ impl Bitfield {
   /// ## Panics
   /// Panics if the page size is not a power of two (2, 4, 8, etc.)
   pub fn new(page_size: usize) -> Self {
-    assert!(is_power_of_two(page_size));
+    assert!(
+      is_power_of_two(page_size),
+      "page_size must be a power of two: {}",
+      page_size
+    );
     Bitfield {
       pages: Pager::new(page_size),
       length: 0,
