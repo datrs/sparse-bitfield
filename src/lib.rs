@@ -69,10 +69,10 @@ impl Bitfield {
   /// Get the value of a bit.
   #[inline]
   pub fn get(&mut self, index: usize) -> bool {
-    let masked_index = index & 7;
-    let j = (index - masked_index) / 8;
+    let byte_offset = index & 7;
+    let j = (index - byte_offset) / 8;
 
-    let num = self.get_byte(j) & (128 >> masked_index);
+    let num = self.get_byte(j) & (128 >> byte_offset);
     match num {
       0 => false,
       _ => true,
@@ -82,10 +82,10 @@ impl Bitfield {
   /// Get a byte from our internal buffers.
   #[inline]
   pub fn get_byte(&self, index: usize) -> u8 {
-    let masked_index = self.page_mask(index);
+    let byte_offset = self.page_mask(index);
     let page_num = index / self.page_size();
     match self.pages.get(page_num) {
-      Some(page) => page[masked_index],
+      Some(page) => page[byte_offset],
       None => 0,
     }
   }
@@ -93,18 +93,19 @@ impl Bitfield {
   /// Set a byte to the right value inside our internal buffers.
   #[inline]
   pub fn set_byte(&mut self, index: usize, byte: u8) -> Change {
-    let masked_index = self.page_mask(index);
-    let page_num = (index - masked_index) / self.page_size();
+    let byte_offset = self.page_mask(index);
+    let page_num = (index - byte_offset) / self.page_size();
+    println!("byte_offset {}, page_num {}, index: {}", byte_offset, page_num, index);
     let page = self.pages.get_mut_or_alloc(page_num);
 
     if index >= self.byte_length {
       self.byte_length = index + 1;
     }
 
-    if page[masked_index] == byte {
+    if page[byte_offset] == byte {
       Change::Unchanged
     } else {
-      page[masked_index] = byte;
+      page[byte_offset] = byte;
       Change::Changed
     }
   }
@@ -155,6 +156,28 @@ impl Bitfield {
     self.byte_length
   }
 
+  /// Get the amount of memory pages in the bitfield.
+  ///
+  /// ## Examples
+  /// ```rust
+  /// # extern crate sparse_bitfield;
+  /// # use sparse_bitfield::Bitfield;
+  /// let mut bits = Bitfield::new(1024);
+  /// assert_eq!(bits.page_len(), 0);
+  /// bits.set(0, true);
+  /// assert_eq!(bits.page_len(), 1);
+  /// bits.set(1, true);
+  /// assert_eq!(bits.page_len(), 1);
+  /// bits.set(2, false);
+  /// assert_eq!(bits.page_len(), 1);
+  /// bits.set(1024 * 8 + 1, true);
+  /// assert_eq!(bits.page_len(), 2);
+  /// ```
+  #[inline]
+  pub fn page_len(&self) -> usize {
+    self.pages.len()
+  }
+
   /// Returns `true` if no bits are stored.
   ///
   /// ## Examples
@@ -168,15 +191,17 @@ impl Bitfield {
   /// ```
   #[inline]
   pub fn is_empty(&self) -> bool {
-    self.len() == 0
+    self.pages.is_empty()
   }
 
   /// Create an `Iterator` that iterates over all pages.
+  #[inline]
   pub fn iter(&mut self) -> Iter {
     Iter::new(self)
   }
 
   #[inline]
+  /// Find which page we should write to.
   fn page_mask(&self, index: usize) -> usize {
     index & (self.page_size() - 1)
   }
