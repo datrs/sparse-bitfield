@@ -37,7 +37,7 @@ impl Bitfield {
   /// Create a new instance.
   ///
   /// ## Panics
-  /// Panics if the page size is not a power of two (2, 4, 8, etc.)
+  /// The page size must be a multiple of 2, and bigger than 0.
   pub fn new(page_size: usize) -> Self {
     assert!(is_power_of_two(page_size));
     Bitfield {
