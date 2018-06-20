@@ -1,6 +1,6 @@
-#![cfg_attr(feature = "nightly", deny(missing_docs))]
-#![cfg_attr(feature = "nightly", feature(external_doc))]
-#![cfg_attr(feature = "nightly", doc(include = "../README.md"))]
+#![cfg_attr(nightly, deny(missing_docs))]
+#![cfg_attr(nightly, feature(external_doc))]
+#![cfg_attr(nightly, doc(include = "../README.md"))]
 #![cfg_attr(test, deny(warnings))]
 
 extern crate memory_pager;
@@ -51,14 +51,18 @@ impl Bitfield {
   /// changed.
   #[inline]
   pub fn set(&mut self, index: usize, value: bool) -> Change {
-    let masked_index = index & 7;
-    let j = (index - masked_index) / 8;
-    let b = self.get_byte(j);
+    let index_mask = index & 7;
+    let byte_index = (index - index_mask) / 8;
+    let byte = self.get_byte(byte_index);
 
     if value {
-      self.set_byte(j, b | (128 >> masked_index))
+      // Mask the byte to flip a bit to `1`.
+      let byte = byte | (128 >> index_mask);
+      self.set_byte(byte_index, byte)
     } else {
-      self.set_byte(j, b & (255 ^ (128 >> masked_index)))
+      // Mask the byte to flip a bit to `0`.
+      let byte = byte & (255 ^ (128 >> index_mask));
+      self.set_byte(byte_index, byte)
     }
   }
 
@@ -96,16 +100,13 @@ impl Bitfield {
     if index >= self.length {
       self.length = index + 1;
     }
+
     if page[masked_index] == byte {
-      return Change::Unchanged;
+      Change::Unchanged
+    } else {
+      page[masked_index] = byte;
+      Change::Changed
     }
-
-    page[masked_index] = byte;
-    if index >= self.length {
-      self.length = index + 1;
-    }
-
-    Change::Changed
   }
 
   /// Get the memory page size in bytes.
@@ -114,13 +115,37 @@ impl Bitfield {
     self.pages.page_size()
   }
 
-  /// Get the amount of bits in the bitfield.
+  /// Get the amount of bytes in the bitfield.
+  ///
+  /// ## Examples
+  /// ```rust
+  /// # extern crate sparse_bitfield;
+  /// # use sparse_bitfield::Bitfield;
+  /// let mut bits = Bitfield::new(1024);
+  /// assert_eq!(bits.len(), 0);
+  /// bits.set(0, true);
+  /// assert_eq!(bits.len(), 1);
+  /// bits.set(1, true);
+  /// assert_eq!(bits.len(), 1);
+  /// bits.set(9, false);
+  /// assert_eq!(bits.len(), 2);
+  /// ```
   #[inline]
   pub fn len(&self) -> usize {
     self.length
   }
 
   /// Returns `true` if no bits are stored.
+  ///
+  /// ## Examples
+  /// ```rust
+  /// # extern crate sparse_bitfield;
+  /// # use sparse_bitfield::Bitfield;
+  /// let mut bits = Bitfield::new(1024);
+  /// assert!(bits.is_empty());
+  /// bits.set(0, true);
+  /// assert!(!bits.is_empty());
+  /// ```
   #[inline]
   pub fn is_empty(&self) -> bool {
     self.len() == 0
@@ -128,15 +153,12 @@ impl Bitfield {
 
   /// Create an `Iterator` that iterates over all pages.
   pub fn iter(&mut self) -> Iter {
-    Iter {
-      inner: self,
-      cursor: 0,
-    }
+    Iter::new(self)
   }
 
   #[inline]
   fn page_mask(&self, index: usize) -> usize {
-    index & self.page_size() - 1
+    index & (self.page_size() - 1)
   }
 }
 

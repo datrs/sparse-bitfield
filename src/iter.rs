@@ -14,6 +14,13 @@ pub struct Iter<'a> {
   pub(crate) cursor: usize,
 }
 
+impl<'a> Iter<'a> {
+  #[inline]
+  pub(crate) fn new(inner: &'a mut Bitfield) -> Self {
+    Self { inner, cursor: 0 }
+  }
+}
+
 impl<'a> iter::Iterator for Iter<'a> {
   type Item = bool;
 
@@ -21,7 +28,10 @@ impl<'a> iter::Iterator for Iter<'a> {
     let cursor = self.cursor;
     self.cursor += 1;
 
-    if cursor >= self.inner.len() {
+    // Each byte contains 8 bits, so we must iterate over each bit.
+    let max = self.inner.len() * 8;
+
+    if cursor >= max {
       None
     } else {
       Some(self.inner.get(cursor))
