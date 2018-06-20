@@ -135,6 +135,26 @@ impl Bitfield {
     self.length
   }
 
+  /// Get the amount of bits in the bitfield.
+  ///
+  /// ## Examples
+  /// ```rust
+  /// # extern crate sparse_bitfield;
+  /// # use sparse_bitfield::Bitfield;
+  /// let mut bits = Bitfield::new(1024);
+  /// assert_eq!(bits.bit_len(), 0);
+  /// bits.set(0, true);
+  /// assert_eq!(bits.bit_len(), 8);
+  /// bits.set(1, true);
+  /// assert_eq!(bits.bit_len(), 8);
+  /// bits.set(9, false);
+  /// assert_eq!(bits.bit_len(), 16);
+  /// ```
+  #[inline]
+  pub fn bit_len(&self) -> usize {
+    self.length * 8
+  }
+
   /// Returns `true` if no bits are stored.
   ///
   /// ## Examples

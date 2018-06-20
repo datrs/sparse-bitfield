@@ -29,9 +29,7 @@ impl<'a> iter::Iterator for Iter<'a> {
     self.cursor += 1;
 
     // Each byte contains 8 bits, so we must iterate over each bit.
-    let max = self.inner.len() * 8;
-
-    if cursor >= max {
+    if cursor >= self.inner.bit_len() {
       None
     } else {
       Some(self.inner.get(cursor))
