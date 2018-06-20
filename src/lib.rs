@@ -20,7 +20,7 @@ pub struct Bitfield {
   /// [memory-pager]: https://docs.rs/memory-pager/
   pub pages: Pager,
 
-  length: usize,
+  byte_length: usize,
   page_length: usize,
 }
 
@@ -43,7 +43,7 @@ impl Bitfield {
     Bitfield {
       pages: Pager::new(page_size),
       page_length: 0,
-      length: 0,
+      byte_length: 0,
     }
   }
 
@@ -97,8 +97,8 @@ impl Bitfield {
     let page_num = (index - masked_index) / self.page_size();
     let page = self.pages.get_mut_or_alloc(page_num);
 
-    if index >= self.length {
-      self.length = index + 1;
+    if index >= self.byte_length {
+      self.byte_length = index + 1;
     }
 
     if page[masked_index] == byte {
@@ -115,7 +115,7 @@ impl Bitfield {
     self.pages.page_size()
   }
 
-  /// Get the amount of bytes in the bitfield.
+  /// Get the amount of bits in the bitfield.
   ///
   /// ## Examples
   /// ```rust
@@ -124,35 +124,35 @@ impl Bitfield {
   /// let mut bits = Bitfield::new(1024);
   /// assert_eq!(bits.len(), 0);
   /// bits.set(0, true);
-  /// assert_eq!(bits.len(), 1);
+  /// assert_eq!(bits.len(), 8);
   /// bits.set(1, true);
-  /// assert_eq!(bits.len(), 1);
+  /// assert_eq!(bits.len(), 8);
   /// bits.set(9, false);
-  /// assert_eq!(bits.len(), 2);
+  /// assert_eq!(bits.len(), 16);
   /// ```
   #[inline]
   pub fn len(&self) -> usize {
-    self.length
+    self.byte_length * 8
   }
 
-  /// Get the amount of bits in the bitfield.
+  /// Get the amount of bytes in the bitfield.
   ///
   /// ## Examples
   /// ```rust
   /// # extern crate sparse_bitfield;
   /// # use sparse_bitfield::Bitfield;
   /// let mut bits = Bitfield::new(1024);
-  /// assert_eq!(bits.bit_len(), 0);
+  /// assert_eq!(bits.byte_len(), 0);
   /// bits.set(0, true);
-  /// assert_eq!(bits.bit_len(), 8);
+  /// assert_eq!(bits.byte_len(), 1);
   /// bits.set(1, true);
-  /// assert_eq!(bits.bit_len(), 8);
+  /// assert_eq!(bits.byte_len(), 1);
   /// bits.set(9, false);
-  /// assert_eq!(bits.bit_len(), 16);
+  /// assert_eq!(bits.byte_len(), 2);
   /// ```
   #[inline]
-  pub fn bit_len(&self) -> usize {
-    self.length * 8
+  pub fn byte_len(&self) -> usize {
+    self.byte_length
   }
 
   /// Returns `true` if no bits are stored.

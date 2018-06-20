@@ -29,7 +29,7 @@ impl<'a> iter::Iterator for Iter<'a> {
     self.cursor += 1;
 
     // Each byte contains 8 bits, so we must iterate over each bit.
-    if cursor >= self.inner.bit_len() {
+    if cursor >= self.inner.len() {
       None
     } else {
       Some(self.inner.get(cursor))
