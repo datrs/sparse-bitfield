@@ -24,22 +24,13 @@ pub struct Bitfield {
   page_length: usize,
 }
 
-/// Create a new instance with a `page_size` of `1kb`.
-impl Default for Bitfield {
-  #[inline]
-  fn default() -> Self {
-    let page_size = 1024;
-    Bitfield::new(page_size)
-  }
-}
-
 impl Bitfield {
   /// Create a new instance.
   ///
   /// ## Panics
   /// The page size must be a multiple of 2, and bigger than 0.
   pub fn new(page_size: usize) -> Self {
-    assert!(is_power_of_two(page_size));
+    assert!(page_size.is_power_of_two());
     Bitfield {
       pages: Pager::new(page_size),
       page_length: 0,
@@ -95,7 +86,6 @@ impl Bitfield {
   pub fn set_byte(&mut self, index: usize, byte: u8) -> Change {
     let byte_offset = self.page_mask(index);
     let page_num = (index - byte_offset) / self.page_size();
-    println!("byte_offset {}, page_num {}, index: {}", byte_offset, page_num, index);
     let page = self.pages.get_mut_or_alloc(page_num);
 
     if index >= self.byte_length {
@@ -207,7 +197,11 @@ impl Bitfield {
   }
 }
 
-#[inline]
-fn is_power_of_two(x: usize) -> bool {
-  x.count_ones() == 1
+/// Create a new instance with a `page_size` of `1kb`.
+impl Default for Bitfield {
+  #[inline]
+  fn default() -> Self {
+    let page_size = 1024;
+    Bitfield::new(page_size)
+  }
 }
