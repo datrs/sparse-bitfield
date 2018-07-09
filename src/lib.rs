@@ -3,6 +3,7 @@
 #![cfg_attr(nightly, doc(include = "../README.md"))]
 #![cfg_attr(test, deny(warnings))]
 
+extern crate failure;
 extern crate memory_pager;
 
 mod change;
@@ -10,7 +11,10 @@ mod iter;
 
 pub use change::Change;
 pub use iter::Iter;
+
+use failure::Error;
 use memory_pager::Pager;
+use std::fs::File;
 
 /// Bitfield instance.
 #[derive(Debug)]
@@ -36,6 +40,27 @@ impl Bitfield {
       page_length: 0,
       byte_length: 0,
     }
+  }
+
+  /// Create a new instance from a `File`.
+  pub fn from_file(
+    file: &mut File,
+    page_size: usize,
+    offset: Option<usize>,
+  ) -> Result<Self, Error> {
+    let pages = Pager::from_file(file, page_size, offset)?;
+    let page_length = pages.len();
+
+    // NOTE: empty pages are initialized as `0` filled. So when we reinitialize
+    // a page, in essence our byte length becomes the amount of bytes we have
+    // times the amount of pages we have.
+    let byte_length = page_length * page_size;
+
+    Ok(Self {
+      pages,
+      page_length,
+      byte_length,
+    })
   }
 
   /// Set a byte to true or false. Returns a boolean indicating if the value was
