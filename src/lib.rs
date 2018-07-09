@@ -14,29 +14,27 @@ pub use iter::Iter;
 
 use failure::Error;
 use memory_pager::Pager;
+use std::cell::RefMut;
 use std::fs::File;
 
 /// Bitfield instance.
 #[derive(Debug)]
-pub struct Bitfield {
-  /// A [memory-pager] instance.
-  ///
-  /// [memory-pager]: https://docs.rs/memory-pager/
-  pub pages: Pager,
-
+pub struct Bitfield<'p> {
+  pages: &'p Pager,
   byte_length: usize,
   page_length: usize,
 }
 
-impl Bitfield {
+impl<'p> Bitfield<'p> {
   /// Create a new instance.
   ///
   /// ## Panics
   /// The page size must be a multiple of 2, and bigger than 0.
   pub fn new(page_size: usize) -> Self {
     assert!(page_size.is_power_of_two());
+    let pages = Pager::new(page_size);
     Bitfield {
-      pages: Pager::new(page_size),
+      pages: &pages,
       page_length: 0,
       byte_length: 0,
     }
@@ -57,7 +55,19 @@ impl Bitfield {
     let byte_length = page_length * page_size;
 
     Ok(Self {
-      pages,
+      pages: &pages,
+      page_length,
+      byte_length,
+    })
+  }
+
+  /// Create an instance from a `Pager` instance.
+  pub fn from_pager(pages: RefMut<'p, Pager>) -> Result<Self, Error> {
+    let page_length = pages.len();
+    let byte_length = page_length * pages.page_size();
+
+    Ok(Self {
+      pages: &pages,
       page_length,
       byte_length,
     })
@@ -211,7 +221,7 @@ impl Bitfield {
 
   /// Create an `Iterator` that iterates over all pages.
   #[inline]
-  pub fn iter(&mut self) -> Iter {
+  pub fn iter(&mut self) -> Iter<'p, '_> {
     Iter::new(self)
   }
 
@@ -223,7 +233,7 @@ impl Bitfield {
 }
 
 /// Create a new instance with a `page_size` of `1kb`.
-impl Default for Bitfield {
+impl<'p> Default for Bitfield<'p> {
   #[inline]
   fn default() -> Self {
     let page_size = 1024;
