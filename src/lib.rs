@@ -221,7 +221,7 @@ impl<'p> Bitfield<'p> {
 
   /// Create an `Iterator` that iterates over all pages.
   #[inline]
-  pub fn iter(&mut self) -> Iter<'p, '_> {
+  pub fn iter<'b: 'p>(&'p mut self) -> Iter<'b, 'p> {
     Iter::new(self)
   }
 
