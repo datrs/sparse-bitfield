@@ -9,8 +9,8 @@ authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
 readme = "README.md"
 
 [dependencies]
-memory-pager = "0.7.0"
-failure = "0.1.1"
+memory-pager = "0.8.0"
+failure = "0.1.2"
 
 [dev-dependencies]
 proptest = "0.6.0"
