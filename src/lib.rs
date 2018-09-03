@@ -63,7 +63,7 @@ impl Bitfield {
     })
   }
 
-  /// Set a byte to true or false. Returns a boolean indicating if the value was
+  /// Set a bit to true or false. Returns a boolean indicating if the value was
   /// changed.
   #[inline]
   pub fn set(&mut self, index: usize, value: bool) -> Change {
@@ -110,7 +110,7 @@ impl Bitfield {
   #[inline]
   pub fn set_byte(&mut self, index: usize, byte: u8) -> Change {
     let byte_offset = self.page_mask(index);
-    let page_num = (index - byte_offset) / self.page_size();
+    let page_num = index / self.page_size();
     let page = self.pages.get_mut_or_alloc(page_num);
 
     if index >= self.byte_length {

@@ -1,6 +1,9 @@
 extern crate sparse_bitfield;
+extern crate failure;
 
 use sparse_bitfield::{Bitfield, Change};
+use std::fs;
+use failure::Error;
 
 #[test]
 fn can_create_bitfield() {
@@ -76,4 +79,16 @@ fn can_iterate() {
 
   let arr: Vec<bool> = bits.iter().collect();
   assert_eq!(arr.len(), 8);
+}
+
+#[test]
+fn from_file() -> Result<(), Error> {
+  let page_size = 10;
+  let mut file = fs::File::open("./tests/fixtures/40_normal.txt")?;
+  let mut bits = Bitfield::from_file(&mut file, page_size, None)?;
+  bits.set(100, false);
+  assert_eq!(bits.page_len(), 4);
+  assert_eq!(bits.len(), 320);
+  assert_eq!(bits.get(100), false);
+  Ok(()) 
 }
