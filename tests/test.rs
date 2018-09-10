@@ -1,9 +1,9 @@
-extern crate sparse_bitfield;
 extern crate failure;
+extern crate sparse_bitfield;
 
+use failure::Error;
 use sparse_bitfield::{Bitfield, Change};
 use std::fs;
-use failure::Error;
 
 #[test]
 fn can_create_bitfield() {
@@ -90,5 +90,5 @@ fn from_file() -> Result<(), Error> {
   assert_eq!(bits.page_len(), 4);
   assert_eq!(bits.len(), 320);
   assert_eq!(bits.get(100), false);
-  Ok(()) 
+  Ok(())
 }
