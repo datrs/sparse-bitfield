@@ -1,3 +1,18 @@
+## 2019-09-07, Version 0.9.0
+### Commits
+- [[`ca1817de93`](https://github.com/datrs/sparse-bitfield/commit/ca1817de9355848bed3f4f622448fda5de6ddcd8)] (cargo-release) version 0.9.0 (Yoshua Wuyts)
+- [[`5da8f11f70`](https://github.com/datrs/sparse-bitfield/commit/5da8f11f70c5078de302eb62211bb7447ead0269)] update err bound (Yoshua Wuyts)
+- [[`d3faf791e4`](https://github.com/datrs/sparse-bitfield/commit/d3faf791e4283104120e28a24a434db86b495368)] Update changelog (Yoshua Wuyts)
+
+### Stats
+```diff
+ CHANGELOG.md | 23 +++++++++++++++++++++++
+ Cargo.toml   |  5 ++---
+ src/lib.rs   |  5 ++---
+ 3 files changed, 27 insertions(+), 6 deletions(-)
+```
+
+
 ## 2018-09-03, Version 0.8.1
 ### Commits
 - [[`d77e66b097`](https://github.com/datrs/sparse-bitfield/commit/d77e66b0976f44d3d822dcc78e10ff8b94c2ee45)] (cargo-release) version 0.8.1 (Yoshua Wuyts)
