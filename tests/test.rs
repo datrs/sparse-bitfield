@@ -79,6 +79,26 @@ fn can_iterate() {
 }
 
 #[test]
+fn can_convert_to_bytes_buffer() {
+  let mut bits = Bitfield::new(1024);
+
+  assert_eq!(bits.to_bytes().unwrap(), vec![]);
+
+  bits.set(0, true);
+
+  assert_eq!(
+    &bits.to_bytes().unwrap(),
+    &bits.pages.get(0).unwrap().as_ref()
+  );
+
+  bits.set(9000, true);
+
+  let mut concat_pages = bits.pages.get(0).unwrap().as_ref().to_vec();
+  concat_pages.extend_from_slice(&bits.pages.get(1).unwrap().as_ref());
+  assert_eq!(bits.to_bytes().unwrap(), concat_pages);
+}
+
+#[test]
 fn from_file() -> Result<(), Error> {
   let page_size = 10;
   let mut file = fs::File::open("./tests/fixtures/40_normal.txt")?;
