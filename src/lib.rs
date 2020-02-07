@@ -230,7 +230,7 @@ impl Bitfield {
       if let Some(page) = next {
         let all_offset = index * self.page_size();
         all.set_position(all_offset as u64);
-        all.write(&page)?;
+        all.write_all(&page)?;
       }
     }
 
