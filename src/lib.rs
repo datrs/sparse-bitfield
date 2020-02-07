@@ -3,13 +3,11 @@
 #![cfg_attr(nightly, doc(include = "../README.md"))]
 #![cfg_attr(test, deny(warnings))]
 
-extern crate memory_pager;
-
 mod change;
 mod iter;
 
-pub use change::Change;
-pub use iter::Iter;
+pub use crate::change::Change;
+pub use crate::iter::Iter;
 
 use memory_pager::Pager;
 use std::fs::File;

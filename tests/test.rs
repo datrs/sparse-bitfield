@@ -1,6 +1,3 @@
-extern crate failure;
-extern crate sparse_bitfield;
-
 use failure::Error;
 use sparse_bitfield::{Bitfield, Change};
 use std::fs;

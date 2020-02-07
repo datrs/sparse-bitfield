@@ -1,5 +1,3 @@
-extern crate sparse_bitfield;
-
 use sparse_bitfield::{Bitfield, Change};
 
 // src/lib.rs::is_even was incorrectly flagging 6 as odd.

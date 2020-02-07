@@ -1,6 +1,4 @@
-extern crate sparse_bitfield;
-#[macro_use]
-extern crate proptest;
+use proptest::proptest;
 
 use sparse_bitfield::{Bitfield, Change};
 
