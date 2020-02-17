@@ -3,13 +3,11 @@
 #![cfg_attr(nightly, doc(include = "../README.md"))]
 #![cfg_attr(test, deny(warnings))]
 
-extern crate memory_pager;
-
 mod change;
 mod iter;
 
-pub use change::Change;
-pub use iter::Iter;
+pub use crate::change::Change;
+pub use crate::iter::Iter;
 
 use memory_pager::Pager;
 use std::fs::File;
@@ -218,6 +216,25 @@ impl Bitfield {
   /// Find which page we should write to.
   fn page_mask(&self, index: usize) -> usize {
     index & (self.page_size() - 1)
+  }
+
+  /// Based on [Bitfield.prototype.toBuffer](https://github.com/mafintosh/sparse-bitfield/blob/master/index.js#L54-L64)
+  pub fn to_bytes(&self) -> std::io::Result<Vec<u8>> {
+    use std::io::{Cursor, Write};
+
+    let mut all =
+      Cursor::new(Vec::with_capacity(self.page_len() * self.page_size()));
+
+    for index in 0..self.page_len() {
+      let next = self.pages.get(index);
+      if let Some(page) = next {
+        let all_offset = index * self.page_size();
+        all.set_position(all_offset as u64);
+        all.write_all(&page)?;
+      }
+    }
+
+    Ok(all.into_inner())
   }
 }
 

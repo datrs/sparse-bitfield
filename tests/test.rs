@@ -1,6 +1,3 @@
-extern crate failure;
-extern crate sparse_bitfield;
-
 use failure::Error;
 use sparse_bitfield::{Bitfield, Change};
 use std::fs;
@@ -79,6 +76,26 @@ fn can_iterate() {
 
   let arr: Vec<bool> = bits.iter().collect();
   assert_eq!(arr.len(), 8);
+}
+
+#[test]
+fn can_convert_to_bytes_buffer() {
+  let mut bits = Bitfield::new(1024);
+
+  assert_eq!(bits.to_bytes().unwrap(), vec![]);
+
+  bits.set(0, true);
+
+  assert_eq!(
+    &bits.to_bytes().unwrap(),
+    &bits.pages.get(0).unwrap().as_ref()
+  );
+
+  bits.set(9000, true);
+
+  let mut concat_pages = bits.pages.get(0).unwrap().as_ref().to_vec();
+  concat_pages.extend_from_slice(&bits.pages.get(1).unwrap().as_ref());
+  assert_eq!(bits.to_bytes().unwrap(), concat_pages);
 }
 
 #[test]
