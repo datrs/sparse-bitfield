@@ -1,3 +1,23 @@
+## 2020-02-19, Version 0.11.0
+### Commits
+- [[`698f58f9f3`](https://github.com/datrs/sparse-bitfield/commit/698f58f9f333ac5a60bc8c0351cf48baaffb6c03)] (cargo-release) version 0.11.0 (Bruno Tavares)
+- [[`3895909bfa`](https://github.com/datrs/sparse-bitfield/commit/3895909bfad1e41b5f1ce2a8bace99728d50e9ca)] Bump to 2018 edition (#16) (Bruno Tavares)
+- [[`f4c97ee26d`](https://github.com/datrs/sparse-bitfield/commit/f4c97ee26dfbd6fcc798a64badf08658e8591730)] To bytes (#17) (Bruno Tavares)
+- [[`9753787b3a`](https://github.com/datrs/sparse-bitfield/commit/9753787b3a16f5f70dc7e521fb4b72f25ced84af)] Update changelog (Yoshua Wuyts)
+
+### Stats
+```diff
+ .travis.yml         |  6 +++---
+ CHANGELOG.md        | 15 +++++++++++++++
+ Cargo.toml          | 22 ++++++++++++----------
+ src/lib.rs          | 25 +++++++++++++++++++++----
+ tests/model.rs      |  4 +---
+ tests/regression.rs |  2 --
+ tests/test.rs       | 23 ++++++++++++++++++++---
+ 7 files changed, 72 insertions(+), 25 deletions(-)
+```
+
+
 ## 2019-09-07, Version 0.9.0
 ### Commits
 - [[`ca1817de93`](https://github.com/datrs/sparse-bitfield/commit/ca1817de9355848bed3f4f622448fda5de6ddcd8)] (cargo-release) version 0.9.0 (Yoshua Wuyts)
