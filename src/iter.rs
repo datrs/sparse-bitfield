@@ -9,19 +9,19 @@ use std::iter;
 // The CPU's (L3) cache might kick in here to store a page at the time, but
 // there's no guarantees that it does. So it's up to us to eventually optimize
 // this.
-pub struct Iter<'a> {
-  pub(crate) inner: &'a mut Bitfield,
+pub struct Iter<'b, 'p> {
+  pub(crate) inner: &'b mut Bitfield<'p>,
   pub(crate) cursor: usize,
 }
 
-impl<'a> Iter<'a> {
+impl<'b, 'p> Iter<'b, 'p> {
   #[inline]
-  pub(crate) fn new(inner: &'a mut Bitfield) -> Self {
+  pub(crate) fn new(inner: &'b mut Bitfield<'p>) -> Self {
     Self { inner, cursor: 0 }
   }
 }
 
-impl<'a> iter::Iterator for Iter<'a> {
+impl<'b, 'p> iter::Iterator for Iter<'b, 'p> {
   type Item = bool;
 
   fn next(&mut self) -> Option<Self::Item> {
